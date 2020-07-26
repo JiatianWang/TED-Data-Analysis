@@ -99,7 +99,7 @@ j.annotate(stats.pearsonr)
 df[['views','comments']].corr()
 
 # =============================================================================
-# As the scatterplot and the correlatoin matrix show, the person coefficient is slightly more than 0.5.
+# As the scatterplot and the correlatoin matrix show, the pearson coefficient is slightly more than 0.5.
 # This suggest a medium to strong correlation between the two quantities. This was pretty expected as mentioned above
 # =============================================================================
 
@@ -230,10 +230,44 @@ plt.figure(figsize = (12,8))
 month_order = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 sns.heatmap(df_pivot, annot = True,linewidth = 0.2, yticklabels = month_order )
 
+#  Who are the most popular TED speakers
 
+speaker_df = df.groupby('main_speaker').count()['comments'].reset_index()
+speaker_df.columns = ['main_speaker','appearances']
+speaker_df = speaker_df.sort_values(by = 'appearances', ascending = False)
+speaker_df.head(10)
 
+# =============================================================================
+# Observation
+# Hans Rosling is clearly the most popular TED Speaker, with 9 appearance on te TED Forum,
+# Juan Enriquez comes a close second with 7 appearances. Rive and Marco Tempest 
+# have graced the TED platform 6 times
+# =============================================================================
 
+# =============================================================================
+# which occupation should you choose if you want ot become a TED Speaker?
+# let us have a look what kind of people TED is most interested in inviting to its event
+# =============================================================================
+occupation_df  = df.groupby('speaker_occupation').count()['comments'].reset_index()
+occupation_df.columns = ['speaker_occupation','appearances']
+occupation_df = occupation_df.sort_values(by = 'appearances',ascending  = False)
+occupation_df.head(10)
 
+plt.figure(figsize = (12,8))
+sns.barplot(x = 'speaker_occupation', y ='appearances' ,data = occupation_df.head(10))
+
+# =============================================================================
+# Observation:
+# Writers are the most popular with more than 45 speaker identifying themselves as the aforementioed
+# Artist and Designers come a distant second with around 35 speakers in each catrgory
+# This results must be taken with a pinch of salt as a considerable number of speaker identify themselves with
+# mutiple professions(for example, writer/entrepreneur).
+# 
+# =============================================================================
+
+# mutiple professions analysis
+
+mutiple_df = df[['main_speaker','speaker_occupation']]
 
 
 
