@@ -248,13 +248,12 @@ speaker_df.head(10)
 # which occupation should you choose if you want ot become a TED Speaker?
 # let us have a look what kind of people TED is most interested in inviting to its event
 # =============================================================================
-occupation_df  = df.groupby('speaker_occupation').count()['comments'].reset_index()
-occupation_df.columns = ['speaker_occupation','appearances']
-occupation_df = occupation_df.sort_values(by = 'appearances',ascending  = False)
-occupation_df.head(10)
-
-plt.figure(figsize = (12,8))
-sns.barplot(x = 'speaker_occupation', y ='appearances' ,data = occupation_df.head(10))
+occupation_df = df.groupby('speaker_occupation').count().reset_index()[['speaker_occupation', 'comments']]
+occupation_df.columns = ['occupation', 'appearances']
+occupation_df = occupation_df.sort_values('appearances', ascending=False)
+plt.figure(figsize=(15,5))
+sns.barplot(x='occupation', y='appearances', data=occupation_df.head(10))
+plt.show()
 
 # =============================================================================
 # Observation:
@@ -266,8 +265,143 @@ sns.barplot(x = 'speaker_occupation', y ='appearances' ,data = occupation_df.hea
 # =============================================================================
 
 # mutiple professions analysis
+# =============================================================================
+# 
+# mutiple_df = df[['main_speaker','speaker_occupation']]
+# m = mutiple_df['speaker_occupation'].value_counts(dropna = False)
+# m.isnull().sum()
+# =============================================================================
 
-mutiple_df = df[['main_speaker','speaker_occupation']]
+# do some professions tend to attract a larger number of viewers? do answer let us visualise the relationship 
+# between the top 10 most professions and the views they garnered in the form of a boxplot
+
+fig, ax = plt.subplots(nrows=1, ncols=1,figsize=(15, 8))
+sns.boxplot(x='speaker_occupation', y='views', data=df[df['speaker_occupation'].isin(occupation_df.head(10)['occupation'])], palette="muted", ax =ax)
+ax.set_ylim([0, 0.8e7])
+plt.show()
+
+# on average, out of the top 10 most popular professions, psychologists tend to garner the most views.
+# writers have the greatest range of views between the first and the third quartile
+
+
+#check the number of talks which have had more than one speaker
+
+df['num_speaker'].value_counts()
+
+# =============================================================================
+# almost every talk has just one speaker. There are close to 50 talks where two people shared the stage.
+# The maximum number of speakers to share a single stage was 5. 
+# have a look at he it with 5 speakers
+# =============================================================================
+
+five = df[df['num_speaker'] == 5][['title','description','main_speaker','event']]
+
+# =============================================================================
+# it turns out the talk titled as A dance to honor Mother earth by Jon Boogz and Lil Buck at the TED 2017 Conference
+# =============================================================================
+
+# which ted event tend to hold the most number of ted.com upload worthy events? 
+
+event_df = df[['title','event']].groupby('event').count().reset_index()
+event_df.columns = ['event','talks']
+event_df = event_df.sort_values(by = 'talks', ascending = False)
+event_df.head(10)
+
+
+
+#  TED languages 
+df['languages'].describe()
+
+# =============================================================================
+# on average, a TED talk is avaiable in 27 different languages. The maximum number of languages a TED talk is 
+# aviable in is a staggering 72.
+# =============================================================================
+
+lan = df[df['languages'] == 72]
+
+# =============================================================================
+# The most translated TED talk of all time is Matt Cutts' Try something new in 30 days. the talk does have a very 
+# universal theme of exploration. The sheer number of languages its aviable in denmands a little more inspection though
+# as it has just over 8 millions, far fewer than the most popular TED talk.
+# 
+# Finally, let us check if there is a correlation between the number of views and the number of languages a talk is 
+# available in. we would think that this should be the case since the talk is more accessible to a larger numbre of people 
+# but as mattcutts' talk shows, it may not really be the case 
+# =============================================================================
+
+
+sns.jointplot(x = 'languages', y = 'views',data = df).annotate(stats.pearsonr)
+
+# =============================================================================
+# The Pearson coefficient is 0.38 suggesting a medium correlation between the aforementioned quantites
+# =============================================================================
+
+#  TED themes
+
+#  try to find the most popular themes in the TED conferences
+
+import ast
+
+df['tags'] = df['tags'].apply(lambda x: ast.literal_eval(x))
+
+s = df.apply(lambda x: pd.Series(x['tags']),axis=1).stack()
+
+theme_df = df.drop('tags', axis=1).join(s)
+# tags = []
+
+# for i in df['tags']:
+#     for x in i:
+#         x.split(',')
+#         tags.append(x)
+
+# tag_df = pd.DataFrame(tags,columns = ['theme'])
+# len(tag_df['theme'].value_counts())
+
+# =============================================================================
+# TED define a a staggering 416 different categories for its talks
+# =============================================================================
+
+# most popular themes
+
+pop_themes = tag_df['theme'].value_counts().reset_index()
+pop_themes.columns = ['themes','talks']
+pop_themes.head(10)
+
+plt.figure(figsize = (15,8))
+sns.barplot(x = 'themes', y = 'talks',data = pop_themes.head(10))
+plt.show()
+
+# =============================================================================
+# As may have been expectedm,Technology is the most popular topic for talks. The other two orginal factions,
+# Design and Entertainment, also make it to the list of top 10 themes.
+# Science and Global issures are the second and third most popular themes repectively 
+# =============================================================================
+
+# Has the demand for technology talks increased?
+# do certain years have a disproportionate share of talks related to golbal issue?
+
+
+pop_themes_year = df[['tags','year']]
+
+for i in pop_themes_year:
+    
+    ppp = pop_themes_year.apply(lambda x: x.split(','), axis =1 )
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
