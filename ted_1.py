@@ -341,29 +341,22 @@ sns.jointplot(x = 'languages', y = 'views',data = df).annotate(stats.pearsonr)
 #  try to find the most popular themes in the TED conferences
 
 import ast
-
 df['tags'] = df['tags'].apply(lambda x: ast.literal_eval(x))
 
-s = df.apply(lambda x: pd.Series(x['tags']),axis=1).stack()
+tags = df['tags'].apply(pd.Series).stack().reset_index(level =1, drop = True)
+tags.name = 'theme'
 
-theme_df = df.drop('tags', axis=1).join(s)
-# tags = []
+theme_df = df.drop('tags', axis = 1).merge(tags,right_index = True, left_index = True)
+theme_df.head()
 
-# for i in df['tags']:
-#     for x in i:
-#         x.split(',')
-#         tags.append(x)
-
-# tag_df = pd.DataFrame(tags,columns = ['theme'])
-# len(tag_df['theme'].value_counts())
-
+len(theme_df['theme'].value_counts())
 # =============================================================================
 # TED define a a staggering 416 different categories for its talks
 # =============================================================================
 
 # most popular themes
 
-pop_themes = tag_df['theme'].value_counts().reset_index()
+pop_themes = pd.DataFrame(theme_df['theme'].value_counts()).reset_index()
 pop_themes.columns = ['themes','talks']
 pop_themes.head(10)
 
@@ -381,13 +374,27 @@ plt.show()
 # do certain years have a disproportionate share of talks related to golbal issue?
 
 
-pop_themes_year = df[['tags','year']]
+pop_theme_talks = theme_df[(theme_df['theme'].isin(pop_themes.head(8)['themes'])) & (theme_df['theme'] != 'TEDx')]
 
-for i in pop_themes_year:
-    
-    ppp = pop_themes_year.apply(lambda x: x.split(','), axis =1 )
-        
-        
+pop_theme_talks['year'] = pop_theme_talks['year'].astype('int')
+
+pop_theme_talks = pop_theme_talks[pop_theme_talks['year'] > 2008]
+
+themes = list(pop_themes['themes'].head(8))
+
+themes.remove('TEDx')
+
+ctab = pd.crosstab(pop_theme_talks['year'] ,pop_theme_talks['theme'])
+ctab = ctab.apply(lambda x: x/x.sum(), axis = 1 )
+
+plt.figure(figsize = (12,8))
+ctab.plot(kind = 'bar', stacked = True, colormap = 'rainbow', figsize = (12,8)).legend(loc = 'center left',bbox_to_anchor=(1,0.5))
+
+
+
+ctab.plot(kind='line', stacked=False, colormap='rainbow', figsize=(12,8)).legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.show()
+
 
 
 
