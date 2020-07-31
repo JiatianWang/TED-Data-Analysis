@@ -387,13 +387,14 @@ themes.remove('TEDx')
 ctab = pd.crosstab(pop_theme_talks['year'] ,pop_theme_talks['theme'])
 ctab = ctab.apply(lambda x: x/x.sum(), axis = 1 )
 
-plt.figure(figsize = (12,8))
+
+
 ctab.plot(kind = 'bar', stacked = True, colormap = 'rainbow', figsize = (12,8)).legend(loc = 'center left',bbox_to_anchor=(1,0.5))
 
+axs = ctab.plot(kind='line', stacked=False, colormap='rainbow', figsize=(12,8)).legend(loc = 'center left',bbox_to_anchor=(1,0.5))
 
-
-ctab.plot(kind='line', stacked=False, colormap='rainbow', figsize=(12,8)).legend(loc='center left', bbox_to_anchor=(1, 0.5))
 plt.show()
+
 
 
 
