@@ -396,6 +396,142 @@ axs = ctab.plot(kind='line', stacked=False, colormap='rainbow', figsize=(12,8)).
 plt.show()
 
 
+# =============================================================================
+# The proporTion of technology talks has steadily increased over the years with a slight dip in 2010.
+# This is understandable considering the boom of techonologies such as blockchain, deep learning, and augmentaed 
+# reality capturing people's imagination 
+# 
+# Talks on culture have witnessed a dip, decreasing steadily starting 2013. The share of culture talks has been the 
+# least in 2017. Entertainment talks also seem to have witnessed a slight decline in popularity since 2009
+# =============================================================================
+
+# =============================================================================
+# like with the speakder occupations, let us investigate if certain topic tend to garner more views than certain 
+# other topic. we will be doing this analysis for the top ten categoreis that we discovered in an earlier cell.
+# As with the speaker occupations, the box plot will be used to deduce this relation.
+# =============================================================================
+
+pop_theme_talks = theme_df[theme_df['theme'].isin(pop_themes.head(10)['themes'])]
+
+fig,ax = plt.subplots(nrows = 1, ncols = 1, figsize = (15,8))
+
+sns.boxplot(x = 'theme', y = 'views', data = pop_theme_talks)
+
+ax.set_ylim([0, 0.5e7])
+
+
+# =============================================================================
+# Although culture has lost its share in the number of TED talks over the years, they garner the highest meadian number of views
+# =============================================================================
+
+
+
+# Talk Duration and Word Counts
+
+# =============================================================================
+# In this section, we will perform analysis on the length of TED talks. TED is famous for imposing a very strict time 
+# of 18 mins. Although this is the suggested limit, there have been talks as short as 2 mins and some have stretched 
+# to as long as 24 mins. 
+# 
+# let us get an idea of distribution of TED talk duration.
+# =============================================================================
+
+# convert to mins
+
+df['duration'] = df['duration'] / 60
+df['duration'].describe()
+# =============================================================================
+# TED talls, on average are 13.7 mins long. I find this statistic surprising because TED talks are often
+# synonymous with 18 mins and the average is a good 3 mins shorter than that 
+# 
+# The shortest TED talks on record is 2.25 mins long wheras the longest talk is 87.6 mins long. I am 
+# pretty sure the longest talks was not actually a TED talk. lets find out both the shortest and longest talk
+# =============================================================================
+
+shortest = df[df['duration'] == 2.25]
+longest = df[df['duration'] == 87.6]
+
+# =============================================================================
+# The shortest talk was at TED2007 titled The ancestor of language by Murray Gell-Mann.
+# The longest talk on TED.com as we have guessed, is not a TED talk at all. Rather, it was a 
+# talk titled Parrots, the universe and everything delivered by Douglas Adams. at the University of California in 2001
+# 
+# Let us now check for any correlation between the popularity and the duration of TED Talk. 
+# To make sure we only include TED talks, we wil consider only those talks which have a duration less than 15 mins
+# =============================================================================
+
+
+a  = sns.jointplot(x = 'duration', y = 'views', data = df[df['duration'] < 25 ])
+a.annotate(stats.pearsonr)
+
+plt.xlabel('Duration')
+plt.ylabel('View')
+
+
+# =============================================================================
+# There seems to be almost no correlation between these two quantites. This strongly suggest that 
+# there is no tangible correlation between the length and the popularity of a TED Talk. content is king at TED
+# 
+# Next, we look at transcripts ot get an idea of word count. For this, we introduce our second dataset, the one
+# which contains all transcripts
+# =============================================================================
+
+df2 = pd.read_csv('transcripts.csv')
+df2.head()
+
+#  merge two dataframe on url feature to include word counts for every talks
+#  left: use only keys from left frame. 
+df3 = pd.merge(left = df, right = df2, how = 'left',left_on = 'url',right_on = 'url')
+df3.head()
+
+df3['transcript'] = df3['transcript'].fillna('')
+df3['wordcount'] = df3['transcript'].apply(lambda x: len(x.split()))
+df3['wordcount'].describe()
+
+
+# =============================================================================
+# we can see that average TED talk has around 1971 words and there is a significantly large stdof 1009 words.
+# The longest talk is more than 9044 words in length 
+# 
+# like duration, there should not be any correlation between number of workd and views. 
+# we will proceed to look at a more interesting statistic: 
+# 
+# =============================================================================
+# the number of words per minute. 
+
+df3['wpm'] = df3['wordcount'] / df3['duration']
+df3['wpm'].describe()
+
+# =============================================================================
+# The average TED Speaker enunciates 142 words per mintue. The fastest talker spoke a staggering 247 words a minute
+# which is much higher than the average of 125 to 150 words per minute in english.
+# =============================================================================
+
+let us see who did it?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
