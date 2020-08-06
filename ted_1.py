@@ -507,14 +507,56 @@ df3['wpm'].describe()
 # which is much higher than the average of 125 to 150 words per minute in english.
 # =============================================================================
 
-let us see who did it?
+# let us see who did it?
 
 
+f = df3[df3['wpm'] > 245]
 
 
+# =============================================================================
+# The person is Mae Jemison with a talk on Teach arts and sciences together at Ted 2002 conference.
+# We should take this result with a pinch of salt because i went ahead and had a look at the talk and 
+# she did not really seem to speak that fast.
+# =============================================================================
+
+# =============================================================================
+# Finally, in this section, i would like to see if there is any correlation between words per minute and popularity 
+# =============================================================================
+
+dp = sns.jointplot(x = 'wpm', y = 'views', data = df3[df3['duration'] < 25 ])
+
+dp.annotate(stats.pearsonr)
+
+# =============================================================================
+# Again, there is practically no correlation. If you are going to give a TED talk, you probably 
+# should not worry if you are speaking a little faster or a little slower than usual 
+# =============================================================================
 
 
+# TED ratings 
 
+# =============================================================================
+# Ted allows its users to rate a particular talk on a variety of metrics. We therefore have data on how many 
+# ppl found a particular talk funny,inspiring, creative, and a myriad of other verbs.
+# =============================================================================
+
+# let us inspect how this ratings dic actually looks like. 
+
+df.iloc[1]['ratings']
+
+df['ratings'] = df['ratings'].apply(lambda x: ast.literal_eval(x))
+
+df['funny'] = df['ratings'].apply(lambda x: x[0]['count'])
+df['jawdrop'] = df['ratings'].apply(lambda x: x[-3]['count'])
+df['beautiful'] = df['ratings'].apply(lambda x: x[3]['count'])
+df['confusing'] = df['ratings'].apply(lambda x: x[2]['count'])
+df.head()
+
+# =============================================================================
+# Funniest Talks of all time 
+# =============================================================================
+
+Funniest = df[['title','main_speaker','views','published_date','funny']].sort_values('funny',ascending = False)
 
 
 
