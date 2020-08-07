@@ -556,23 +556,44 @@ df.head()
 # Funniest Talks of all time 
 # =============================================================================
 
-Funniest = df[['title','main_speaker','views','published_date','funny']].sort_values('funny',ascending = False)
+funniest = df[['title','main_speaker','views','published_date','funny']].sort_values('funny',ascending = False)
 
 
+# =============================================================================
+# Most beautiful talks of all time 
+# =============================================================================
+
+beautiful = df[['title','main_speaker','views','published_date','beautiful']].sort_values('beautiful',ascending = False)
+
+# =============================================================================
+# most jaw dropping talks of all time
+# =============================================================================
+
+jawdrop = df[['title','main_speaker','views','published_date','jawdrop']].sort_values('jawdrop', ascending = False)
+
+# =============================================================================
+# most confusing talks of all time
+# =============================================================================
+confusing = df[['title','main_speaker','views','published_date','confusing']].sort_values('confusing', ascending = False)
 
 
+# Related videos
+
+# =============================================================================
+# In this last section, we will have a look at how every TED talk is related to every other TED talk by 
+# constructing a graph with all the talk as nodes and edges defined between two talks if one talks is on the list of 
+# recommended watches of the other.Considering the fact that TED talks are extremely diverse, it would be interesting 
+# to see how dense or sparse our graph will be  
+# =============================================================================
 
 
+df['related_talks'] = df['related_talks'].apply(lambda x: ast.literal_eval(x))
 
+s = df['related_talks'].apply(pd.Series).stack().reset_index(level = 1, drop = True)
 
+s.name = 'related'
 
-
-
-
-
-
-
-
+related_df = df.drop('related_talks',axis = 1 ).merge(s,left_index = True, right_index = True)
 
 
 
