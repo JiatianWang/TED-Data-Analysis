@@ -595,16 +595,44 @@ s.name = 'related'
 
 related_df = df.drop('related_talks',axis = 1 ).merge(s,left_index = True, right_index = True)
 
+related_df['related'] = related_df['related'].apply(lambda x: x['title'])
+
+
+d = dict(related_df['title'].drop_duplicates())
+d = {v: k for k,v in d.items()}  # key become value and value become key
+
+related_df['title'] = related_df['title'].apply(lambda x: d[x])
 
 
 
+# =============================================================================
+# The TED Wrold Cloud
+# 
+# I was curious about which words are most often used by TED speakers. Could we create a Word Cloud out of 
+# all TED speeches? luckily, Python has a very useful word cloud generating library that allows us to do just that 
+# 
+# python string join() method
+# 
+# join all items in a tuple into a string , using ' ' character separator
+# 
+# =============================================================================
+ww = ''.join(df2['transcript'])
+
+from wordcloud import WordCloud, STOPWORDS
+
+wordcloud = WordCloud(stopwords=STOPWORDS, background_color='white',width=2400,height=2000).generate(ww)
+plt.figure(figsize=(12,15))
+plt.imshow(wordcloud)
+plt.axis('off')
+plt.show()
 
 
-
-
-
-
-
+# =============================================================================
+# # The word one is the most popular word across the corpus of all TED  transcript which I think encapsulates
+# # the idea of TED pretty well. Now ,think, know, see, people, laugther are among the most popupar words usedin TEd 
+# # speeches. TED speeched seem to place a lot of emphasis on knowledge, insight, the present and of course the people
+# =============================================================================
+ 
 
 
 
